@@ -9,6 +9,7 @@ public:
  void setsplitt(int splitt);
  void setangle(int angle);
  void moverot(int sangle);
+ void moverot(int sangle, bool direct);
  void linmove(float angle, bool direct);
  void linmove(float angle);
  void setcoors(int angle);
