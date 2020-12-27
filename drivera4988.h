@@ -13,20 +13,19 @@ public:
  void linmove(float angle, bool direct);
  void linmove(float angle);
  void setcoors(int angle);
- void move(int step, bool direct);
- void setherezero();
+ void move(int step, bool direct); 
+ void setherezero(); //установка текущей координаты как дом
 
 private : 
-	int abszero = 0;
-
-	int _step;
-	int _numpinstep;	
-	int _numpindir;
-	int _numpinm1;
-	int _numpinm2;
-	int _numpinm3; 
-	float curangle = 0;
-	int _speed;
+	int abszero = 0; // координата дома относительной системы координат 
+	int _step; // шагов на один оборот
+	int _numpinstep; //пин для связи с драйвером
+	int _numpindir; //пин направления
+	int _numpinm1; //пин м1 драйвера
+	int _numpinm2; //пин м2 драйвера
+	int _numpinm3; //пин м3 драйвера
+	float curangle = 0;//угол поворота на данный момент
+	int _speed; //скорость вращения
 	bool curmode = 0;// 0 - относительная система координат , 1 - абсолютная система координат
 	int cursplitt = 0;// 0 - 1 , 1 - 1/2 , 2 - 1/4 , 3 - 1/8 , 4 - 1/16 режимы микрошага
 };

@@ -1,0 +1,11 @@
+Drivera KEWWORD1
+drivera4988 KEWWORD1
+setangle KEWWORD2
+setcoors KEWWORD2
+setspeed KEWWORD2
+setsplitt KEWWORD2
+moverot KEWWORD2
+setmode KEWWORD2
+linmove KEWWORD2
+setherezero KEWWORD2
+move KEWWORD2
