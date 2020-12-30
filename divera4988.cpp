@@ -88,7 +88,34 @@ void Drivera::setsplitt(int splitt)
 void Drivera::setangle(int angle){
 
 }
+
 void Drivera::linmove(float angle){
+
+float angleperstep =360/_step;
+if(!curmode){//линейное движение в относительной  системе координат
+int abscurangle = curangle-abszero;
+if(abscurangle <0 ) abscurangle = 360 + abscurangle;
+
+		int nstep = (angle - curangle) ;
+		if(nstep <0 ) nstep = 360 + nstep;
+		
+		nstep /= angleperstep;
+		move(nstep,1);
+		curangle = nstep * angleperstep + curangle;
+		if(curangle > 359) curangle = 360 - curangle;
+}
+else {//линейное движение в абсолютной системе координат
+
+		int nstep = (angle - curangle) / angleperstep ;
+		if(nstep <0 ) nstep = 360 + nstep;
+		
+		nstep /= angleperstep;
+		move(nstep,1);
+		curangle = nstep * angleperstep + curangle;
+		if(curangle > 359) curangle = 360 - curangle;
+}
+}
+void Drivera::linmove(float angle, bool direct){
 float angleperstep =360/_step;
 if(!curmode){//линейное движение в относительной  системе координат
 int abscurangle = curangle-abszero;
@@ -97,14 +124,52 @@ if(abscurangle <0 ) abscurangle = 360 + abscurangle;
 		int nstep = (angle - curangle) ;
 		if(nstep <0 ) nstep = 360 + nstep;
 		nstep /= angleperstep;
-		move(nstep,1);
+		move(nstep,direct);
+		if(direct){
+			curangle = nstep * angleperstep + curangle;
+		if(curangle > 359) curangle = 360 - curangle;
+		}else{
+			curangle =curangle - nstep * angleperstep;
+			if(curangle < 0 ) curangle = 360 + curangle;
+		if(curangle > 359) curangle = 360 - curangle;
+		}
 }
 else {//линейное движение в абсолютной системе координат
 		int nstep = (angle - curangle) / angleperstep ;
 		if(nstep <0 ) nstep = 360 + nstep;
+		
 		nstep /= angleperstep;
-		move(nstep,1);
+		move(nstep,direct);
+		if(direct){
+			curangle = nstep * angleperstep + curangle;
+		if(curangle > 359) curangle = 360 - curangle;
+		}else{
+			curangle =curangle - nstep * angleperstep;
+			if(curangle < 0 ) curangle = 360 + curangle;
+		if(curangle > 359) curangle = 360 - curangle;
+		}
+		
 }
 }
-
-void Drivera::moverot(int step){}
+void Drivera::moverot(int sangle){
+float angleperstep =360/_step;
+int nstep = sangle / angleperstep;
+move(nstep,1);
+int df = (curangle +  nstep * angleperstep) / 360;
+curangle =(curangle  +  nstep * angleperstep) - df * 360;
+}
+void Drivera::moverot(int sangle, bool direct){
+	
+float angleperstep =360/_step;
+int nstep = sangle / angleperstep;
+move(nstep,direct);
+if(direct){
+		int df = (curangle +  nstep * angleperstep) / 360;
+curangle =(curangle  +  nstep * angleperstep) - df * 360;
+	}
+	else {
+		int df = (curangle -  nstep * angleperstep) / 360;
+curangle =(curangle  -  nstep * angleperstep) + df * 360;
+if(curangle < 0 ) curangle = 360 + curangle;
+	}
+}
