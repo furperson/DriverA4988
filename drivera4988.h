@@ -14,6 +14,7 @@ public:
  void linmove(float angle);
  void setcoors(int angle);
  void move(int step, bool direct);
+ void setherezero();
 
 private : 
 	int abszero = 0;
