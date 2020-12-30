@@ -116,7 +116,7 @@ void Drivera::setherezero()
 void Drivera::linmove(float angle)
 {
 
-	float angleperstep = 360 / _step;
+	float angleperstep = (float)360 / _step;
 	if (!curmode)
 	{ //линейное движение в относительной  системе координат
 		int abscurangle = curangle - abszero;
@@ -125,7 +125,7 @@ void Drivera::linmove(float angle)
 
 		int nstep = (angle - curangle);
 		if (nstep < 0)
-			nstep = 360 + nstep;
+			nstep = (360 - abscurangle) + nstep;
 
 		nstep /= angleperstep;
 		move(nstep, 1);
@@ -150,7 +150,7 @@ void Drivera::linmove(float angle)
 
 void Drivera::linmove(float angle, bool direct)
 {
-	float angleperstep = 360 / _step;
+	float angleperstep = (float)360 / _step;
 	if (!curmode)
 	{ //линейное движение в относительной  системе координат
 		int abscurangle = curangle - abszero;
@@ -204,7 +204,7 @@ void Drivera::linmove(float angle, bool direct)
 
 void Drivera::moverot(int sangle)
 {
-	float angleperstep = 360 / _step;
+	float angleperstep = (float)360 / _step;
 	int nstep = sangle / angleperstep;
 	move(nstep, 1);
 	int df = (curangle + nstep * angleperstep) / 360;
@@ -213,19 +213,18 @@ void Drivera::moverot(int sangle)
 
 void Drivera::moverot(int sangle, bool direct)
 {
-
-	float angleperstep = 360 / _step;
+	float angleperstep = (float)360 / _step;
 	int nstep = sangle / angleperstep;
 	move(nstep, direct);
 	if (direct)
 	{
-		int df = (curangle + nstep * angleperstep) / 360;
-		curangle = (curangle + nstep * angleperstep) - df * 360;
+		int df = (curangle + nstep * angleperstep) ;
+		curangle = (curangle + nstep * angleperstep) - df ;
 	}
 	else
 	{
-		int df = (curangle - nstep * angleperstep) / 360;
-		curangle = (curangle - nstep * angleperstep) + df * 360;
+		int df = (curangle - nstep * angleperstep);
+		curangle = (curangle - nstep * angleperstep) + df ;
 		if (curangle < 0)
 			curangle = 360 + curangle;
 	}
