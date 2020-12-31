@@ -14,8 +14,6 @@ Drivera ds(pin_STEP, pin_DIR, pin_M1, pin_M2, pin_M3,STEP, SPEED, ACCEL , MINSPE
 void setup() {}
 
 void loop() {
-  ds.moverot(360,1); // поворот на 360 градусов 
-  delay(1000);
-  ds.moverot(360,0); //поворот обратно
+  ds.linmove(180); // поворот до 180 градусов
   delay(1000);
 }

@@ -4,21 +4,23 @@
 class Drivera
 {
 public:
-	Drivera(int numpinsteps, int numpindirs, int numpinm1s, int numpinm2s, int numpinm3s, int steps, int speeds); // конструктор класса
-	void setspeed(int uspeed);
-	void setmode(bool mode);
-	void setsplitt(int splitt);
-	void setangle(int angle);
-	void moverot(float sangle);
-	void moverot(float sangle, bool direct);
-	void linmove(float angle);
-	void setcoors(float angle);
-	void move(int step, bool direct);
+	Drivera(int numpinsteps, int numpindirs, int numpinm1s, int numpinm2s, int numpinm3s, int steps, int speeds, int accel,int minspeed); // конструктор класса
+	void setspeed(int uspeed);//установить скорость
+	void setmode(bool mode);// установить систему координат( 0 - относительная система координат , 1 - абсолютная система координат)
+	void setsplitt(int splitt);// установить микрошаг
+	void setangle(int angle);// поворот до опр. угла (от 0 до 360)
+	void moverot(float sangle);// поворот на определеный угол(от 0 до int) в сторону 1
+	void moverot(float sangle, bool direct);// поворот на определеный угол(от 0 до int) в опр. сторону (0,1)
+	void linmove(float angle);// линейное движение
+	void setcoors(float angle);// утсановить текущие координаты
+	void move(int step, bool direct);// движение на опр. кол-во шагов
 	void setherezero(); //установка текущей координаты как дом
-	int getangle();
+	int getangle();// получить текущий реальный угол
 	void sethome(float angle);
-
+	void setaccel(int naccel);
 private:
+int minspeed;
+int accel;
 	int abszero = 0;	// координата дома относительной системы координат
 	int step;			// шагов на один оборот
 	int numpinstep;	//пин для связи с драйвером

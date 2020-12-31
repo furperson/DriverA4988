@@ -1,7 +1,7 @@
 #include "drivera4988.h"
 
-Drivera::Drivera(int numpinsteps, int numpindirs, int numpinm1s, int numpinm2s, int numpinm3s, int steps, int speeds) : numpinstep{numpinsteps},
-																														numpindir{numpindirs}, numpinm1{numpinm1s}, numpinm2{numpinm2s}, numpinm3{numpinm3s}, speed{speeds}, step{steps}
+Drivera::Drivera(int numpinsteps, int numpindirs, int numpinm1s, int numpinm2s, int numpinm3s, int steps, int speeds, int accels, int minspeeds) : numpinstep{numpinsteps},
+																																				   numpindir{numpindirs}, numpinm1{numpinm1s}, numpinm2{numpinm2s}, numpinm3{numpinm3s}, speed{speeds}, step{steps}, accel{accels}, minspeed{minspeeds}
 {
 
 	pinMode(numpinstep, OUTPUT);
@@ -14,16 +14,25 @@ Drivera::Drivera(int numpinsteps, int numpindirs, int numpinm1s, int numpinm2s, 
 	digitalWrite(numpinm3, LOW);
 }
 
-void Drivera::move(int step, bool direct)
+void Drivera::move(int steps, bool direct)
 {
-
 	digitalWrite(numpindir, direct);
-	for (int i = 0; i < step * mnsplitt; i++)
+	int nowstep = steps * mnsplitt;
+	int nowspeed = minspeed;
+	int nst = (minspeed - speed) / accel;
+	if (nst > nowstep / 2)
+		nst = steps / 2;
+	int connst = nowstep - nst;
+	for (int i = 0; i < nowstep; i++)
 	{
+		if (i < nst)
+			nowspeed -= accel;
+		if (i >= connst)
+			nowspeed += accel;
 		digitalWrite(numpinstep, HIGH);
-		delay(speed);
+		delay(nowspeed);
 		digitalWrite(numpinstep, LOW);
-		delay(speed);
+		delay(nowspeed);
 	}
 }
 
@@ -35,6 +44,11 @@ void Drivera::sethome(float angle)
 void Drivera::setspeed(int uspeed)
 {
 	speed = uspeed;
+}
+
+void Drivera::setaccel(int accelsd)
+{
+	accel = accelsd;
 }
 
 void Drivera::setmode(bool mode)
