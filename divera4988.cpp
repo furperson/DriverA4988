@@ -28,6 +28,10 @@ void Drivera::move(int step, bool direct)
 	}
 }
 
+void Drivera::sethome(float angle){
+abszero = angle;
+}
+
 void Drivera::setspeed(int uspeed)
 {
 	_speed = uspeed;
@@ -38,8 +42,10 @@ void Drivera::setmode(bool mode)
 	curmode = mode;
 }
 
-void Drivera::setcoors(int angle)
+void Drivera::setcoors(float angle)
 {
+	if (angle == 360)
+		angle = 0;
 	curangle = angle;
 }
 
@@ -119,112 +125,74 @@ void Drivera::linmove(float angle)
 	float angleperstep = (float)360 / _step;
 	if (!curmode)
 	{ //линейное движение в относительной  системе координат
-		int abscurangle = curangle - abszero;
-		if (abscurangle < 0)
-			abscurangle = 360 + abscurangle;
-
-		int nstep = (angle - curangle);
-		if (nstep < 0)
-			nstep = (360 - abscurangle) + nstep;
-
-		nstep /= angleperstep;
-		move(nstep, 1);
-		curangle = nstep * angleperstep + curangle;
-		if (curangle > 359)
-			curangle = 360 - curangle;
+		if (angle == 360)
+			angle = 0;
+		int abscurangle = curangle + abszero;
+		
+		if (abscurangle > 359)
+			abscurangle =  abscurangle - 360;
+		float nstep = angle;
+		if (nstep > 359)
+			nstep = nstep - 360;
+		if (nstep > abscurangle)
+		{
+			nstep = (nstep - abscurangle);
+			nstep /= angleperstep;
+			move((int)nstep, 1);
+			curangle = curangle + (nstep * angleperstep);
+			if (curangle > 359)
+				curangle = curangle - 360;
+		}
+		else
+		{
+			nstep = (abscurangle - nstep);
+			nstep /= angleperstep;
+			move((int)nstep, 0);
+			curangle = curangle - (nstep * angleperstep);
+			if (curangle < 0)
+				curangle = 360 + curangle;
+		}
 	}
 	else
 	{ //линейное движение в абсолютной системе координат
-
-		int nstep = (angle) / angleperstep;
-		if (nstep < 0)
-			nstep = 360 + nstep;
-
-		nstep /= angleperstep;
-		move(nstep, 1);
-		curangle = nstep * angleperstep + curangle;
-		if (curangle > 359)
-			curangle = 360 - curangle;
+		moverot(angle);
 	}
+
+	
 }
 
-void Drivera::linmove(float angle, bool direct)
+int Drivera::getangle()
 {
-	float angleperstep = (float)360 / _step;
-	if (!curmode)
-	{ //линейное движение в относительной  системе координат
-		int abscurangle = curangle - abszero;
-		if (abscurangle < 0)
-			abscurangle = 360 + abscurangle;
-
-		int nstep = (angle - curangle);
-		if (nstep < 0)
-			nstep = 360 + nstep;
-		nstep /= angleperstep;
-		move(nstep, direct);
-		if (direct)
-		{
-			curangle = nstep * angleperstep + curangle;
-			if (curangle > 359)
-				curangle = 360 - curangle;
-		}
-		else
-		{
-			curangle = curangle - nstep * angleperstep;
-			if (curangle < 0)
-				curangle = 360 + curangle;
-			if (curangle > 359)
-				curangle = 360 - curangle;
-		}
-	}
-	else
-	{ //линейное движение в абсолютной системе координат
-		int nstep = (angle - curangle) / angleperstep;
-		if (nstep < 0)
-			nstep = 360 + nstep;
-
-		nstep /= angleperstep;
-		move(nstep, direct);
-		if (direct)
-		{
-			curangle = nstep * angleperstep + curangle;
-			if (curangle > 359)
-				curangle = 360 - curangle;
-		}
-		else
-		{
-			curangle = curangle - nstep * angleperstep;
-			if (curangle < 0)
-				curangle = 360 + curangle;
-			if (curangle > 359)
-				curangle = 360 - curangle;
-		}
-	}
+	return (int)curangle;
 }
 
-void Drivera::moverot(int sangle)
+void Drivera::moverot(float sangle)
 {
 	float angleperstep = (float)360 / _step;
 	int nstep = sangle / angleperstep;
 	move(nstep, 1);
-	int df = (curangle + nstep * angleperstep) / 360;
-	curangle = (curangle + nstep * angleperstep) - df * 360;
+	curangle = (curangle + nstep * angleperstep);
+	int cofs = curangle / 360;
+	curangle -= cofs * 360;
 }
 
-void Drivera::moverot(int sangle, bool direct)
+void Drivera::moverot(float sangle, bool direct)
 {
 	float angleperstep = (float)360 / _step;
 	int nstep = sangle / angleperstep;
 	move(nstep, direct);
 	if (direct)
 	{
-		int df = (curangle + nstep * angleperstep) ;
-		curangle = (curangle + nstep * angleperstep) - df ;
+		curangle = (curangle + nstep * angleperstep);
+		int cofs = curangle / 360;
+		curangle -= cofs * 360;
 	}
 	else
 	{
-		int df = (curangle - nstep * angleperstep);
-		curangle = (curangle - nstep * angleperstep) + df ;
+
+		curangle = (curangle - nstep * angleperstep);
+		int cofs = curangle / 360;
+		curangle -= cofs * 360;
 		if (curangle < 0)
 			curangle = 360 + curangle;
 	}
