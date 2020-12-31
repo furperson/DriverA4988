@@ -4,7 +4,7 @@
 class Drivera
 {
 public:
-	Drivera(int numpinstep, int numpindir, int numpinm1, int numpinm2, int numpinm3, int step, int speed); // конструктор класса
+	Drivera(int numpinsteps, int numpindirs, int numpinm1s, int numpinm2s, int numpinm3s, int steps, int speeds); // конструктор класса
 	void setspeed(int uspeed);
 	void setmode(bool mode);
 	void setsplitt(int splitt);
@@ -20,14 +20,15 @@ public:
 
 private:
 	int abszero = 0;	// координата дома относительной системы координат
-	int _step;			// шагов на один оборот
-	int _numpinstep;	//пин для связи с драйвером
-	int _numpindir;		//пин направления
-	int _numpinm1;		//пин м1 драйвера
-	int _numpinm2;		//пин м2 драйвера
-	int _numpinm3;		//пин м3 драйвера
+	int step;			// шагов на один оборот
+	int numpinstep;	//пин для связи с драйвером
+	int numpindir;		//пин направления
+	int numpinm1;		//пин м1 драйвера
+	int numpinm2;		//пин м2 драйвера
+	int numpinm3;		//пин м3 драйвера
 	float curangle = 0; //угол поворота на данный момент
-	int _speed;			//скорость вращения
+	int speed;			//скорость вращения
 	bool curmode = 0;	// 0 - относительная система координат , 1 - абсолютная система координат
 	int cursplitt = 0;	// 0 - 1 , 1 - 1/2 , 2 - 1/4 , 3 - 1/8 , 4 - 1/16 режимы микрошага
+	int mnsplitt = 1;
 };

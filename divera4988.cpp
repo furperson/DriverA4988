@@ -1,40 +1,40 @@
 #include "drivera4988.h"
 
-Drivera::Drivera(int numpinstep, int numpindir, int numpinm1, int numpinm2, int numpinm3, int step, int speed)
+Drivera::Drivera(int numpinsteps, int numpindirs, int numpinm1s, int numpinm2s, int numpinm3s, int steps, int speeds) : numpinstep{numpinsteps},
+																														numpindir{numpindirs}, numpinm1{numpinm1s}, numpinm2{numpinm2s}, numpinm3{numpinm3s}, speed{speeds}, step{steps}
 {
-	_numpinstep = numpinstep;
-	_numpindir = numpindir;
-	_numpinm1 = numpinm1;
-	_numpinm2 = numpinm2;
-	_numpinm3 = numpinm3;
-	_speed = speed;
-	_step = step;
+
 	pinMode(numpinstep, OUTPUT);
 	pinMode(numpindir, OUTPUT);
 	pinMode(numpinm1, OUTPUT);
 	pinMode(numpinm2, OUTPUT);
 	pinMode(numpinm3, OUTPUT);
+	digitalWrite(numpinm1, LOW);
+	digitalWrite(numpinm2, LOW);
+	digitalWrite(numpinm3, LOW);
 }
 
 void Drivera::move(int step, bool direct)
 {
-	digitalWrite(_numpindir, direct);
-	for (int i = 0; i < step; i++)
+
+	digitalWrite(numpindir, direct);
+	for (int i = 0; i < step * mnsplitt; i++)
 	{
-		digitalWrite(_numpinstep, HIGH);
-		delay(_speed);
-		digitalWrite(_numpinstep, LOW);
-		delay(_speed);
+		digitalWrite(numpinstep, HIGH);
+		delay(speed);
+		digitalWrite(numpinstep, LOW);
+		delay(speed);
 	}
 }
 
-void Drivera::sethome(float angle){
-abszero = angle;
+void Drivera::sethome(float angle)
+{
+	abszero = angle;
 }
 
 void Drivera::setspeed(int uspeed)
 {
-	_speed = uspeed;
+	speed = uspeed;
 }
 
 void Drivera::setmode(bool mode)
@@ -55,63 +55,82 @@ void Drivera::setsplitt(int splitt)
 	{
 		for (int i = 0; i <= cursplitt - splitt; i++)
 		{
-			_step / 2;
+			step / 2;
 		}
 	}
 	else
 	{
 		for (int i = 0; i <= splitt - cursplitt; i++)
 		{
-			_step * 2;
+			step * 2;
 		}
 	}
 	cursplitt = splitt;
 	switch (cursplitt)
 	{
 	case 0:
-		digitalWrite(_numpinm1, LOW);
-		digitalWrite(_numpinm2, LOW);
-		digitalWrite(_numpinm3, LOW);
+		mnsplitt = 1;
+		digitalWrite(numpinm1, LOW);
+		digitalWrite(numpinm2, LOW);
+		digitalWrite(numpinm3, LOW);
 		break;
 
 	case 1:
-		digitalWrite(_numpinm1, HIGH);
-		digitalWrite(_numpinm2, LOW);
-		digitalWrite(_numpinm3, LOW);
+		mnsplitt = 2;
+		digitalWrite(numpinm1, HIGH);
+		digitalWrite(numpinm2, LOW);
+		digitalWrite(numpinm3, LOW);
 		break;
 
 	case 2:
-		digitalWrite(_numpinm1, LOW);
-		digitalWrite(_numpinm2, HIGH);
-		digitalWrite(_numpinm3, LOW);
+		mnsplitt = 4;
+		digitalWrite(numpinm1, LOW);
+		digitalWrite(numpinm2, HIGH);
+		digitalWrite(numpinm3, LOW);
 		break;
 
 	case 3:
-		digitalWrite(_numpinm1, HIGH);
-		digitalWrite(_numpinm2, HIGH);
-		digitalWrite(_numpinm3, LOW);
+		mnsplitt = 8;
+		digitalWrite(numpinm1, HIGH);
+		digitalWrite(numpinm2, HIGH);
+		digitalWrite(numpinm3, LOW);
 		break;
 
 	case 4:
-		digitalWrite(_numpinm1, HIGH);
-		digitalWrite(_numpinm2, HIGH);
-		digitalWrite(_numpinm3, HIGH);
+		mnsplitt = 16;
+		digitalWrite(numpinm1, HIGH);
+		digitalWrite(numpinm2, HIGH);
+		digitalWrite(numpinm3, HIGH);
 		break;
 	}
 };
 
 void Drivera::setangle(int angle)
 {
-	float angleperstep = 360 / _step;
-	int nstep = (angle - curangle) / angleperstep;
-	if (nstep < 0)
-		nstep = 360 + nstep;
-
-	nstep /= angleperstep;
-	move(nstep, 1);
-	curangle = nstep * angleperstep + curangle;
-	if (curangle > 359)
-		curangle = 360 - curangle;
+	float angleperstep = (float)360 / step;
+	if (angle == 360)
+		angle = 0;
+	float nstep = angle;
+	if (nstep > 359)
+		nstep = nstep - 360;
+	if (nstep > curangle)
+	{
+		nstep = (nstep - curangle);
+		nstep /= angleperstep;
+		move((int)nstep, 1);
+		curangle = curangle + (nstep * angleperstep);
+		if (curangle > 359)
+			curangle = curangle - 360;
+	}
+	else
+	{
+		nstep = (curangle - nstep);
+		nstep /= angleperstep;
+		move((int)nstep, 0);
+		curangle = curangle - (nstep * angleperstep);
+		if (curangle < 0)
+			curangle = 360 + curangle;
+	}
 }
 
 void Drivera::setherezero()
@@ -122,15 +141,15 @@ void Drivera::setherezero()
 void Drivera::linmove(float angle)
 {
 
-	float angleperstep = (float)360 / _step;
+	float angleperstep = (float)360 / step;
 	if (!curmode)
 	{ //линейное движение в относительной  системе координат
 		if (angle == 360)
 			angle = 0;
 		int abscurangle = curangle + abszero;
-		
+
 		if (abscurangle > 359)
-			abscurangle =  abscurangle - 360;
+			abscurangle = abscurangle - 360;
 		float nstep = angle;
 		if (nstep > 359)
 			nstep = nstep - 360;
@@ -157,8 +176,6 @@ void Drivera::linmove(float angle)
 	{ //линейное движение в абсолютной системе координат
 		moverot(angle);
 	}
-
-	
 }
 
 int Drivera::getangle()
@@ -168,7 +185,7 @@ int Drivera::getangle()
 
 void Drivera::moverot(float sangle)
 {
-	float angleperstep = (float)360 / _step;
+	float angleperstep = (float)360 / step;
 	int nstep = sangle / angleperstep;
 	move(nstep, 1);
 	curangle = (curangle + nstep * angleperstep);
@@ -178,7 +195,7 @@ void Drivera::moverot(float sangle)
 
 void Drivera::moverot(float sangle, bool direct)
 {
-	float angleperstep = (float)360 / _step;
+	float angleperstep = (float)360 / step;
 	int nstep = sangle / angleperstep;
 	move(nstep, direct);
 	if (direct)
